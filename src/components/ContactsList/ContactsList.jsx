@@ -30,3 +30,4 @@ const ContactsList = ({ contacts }) => {
 };
 
 export default ContactsList;
+

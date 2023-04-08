@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FaceIcon from '@mui/icons-material/Face';
+import PropTypes from 'prop-types';
 
 import { useDeleteContactMutation } from 'redux/contactsApi';
 
@@ -45,3 +46,9 @@ const ContactsListItem = ({ name, id, phone }) => {
 };
 
 export default ContactsListItem;
+ContactsListItem.propTypes = {
+  id: PropTypes.string,
+  name: PropTypes.string,
+  phone: PropTypes.string,
+
+}
