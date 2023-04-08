@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import TextField from '@mui/material/TextField';
 import { FormControl } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { setFilterValue } from 'redux/filter/filterSlice';
+import { filterChange } from 'redux/filter/filterSlice';
 
 function Filter() {
   const dispatch = useDispatch();
@@ -10,8 +10,7 @@ function Filter() {
   const setFilterData = useCallback(
     e => {
       const { value } = e.currentTarget;
-      const valueLowerCase = value.toLowerCase();
-      dispatch(setFilterValue(valueLowerCase));
+      dispatch(filterChange(value.toLowerCase()));
     },
     [dispatch]
   );

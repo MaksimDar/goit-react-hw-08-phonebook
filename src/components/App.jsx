@@ -1,63 +1,60 @@
-import React, { useEffect } from 'react';
-import ContactsForm from '../components/Form';
-import Filter from '../components/Filter';
-import MemoizedContactList from '../components/ContactsList';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import React, { useEffect, lazy, useState } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchContacts } from 'redux/operations';
-import {
-  selectContacts,
-  selectError,
-  selectIsLoading,
-  selectFilter,
-} from 'redux/selectors';
+import Layout from 'components/Layout';
 
-const filterContacts = (contacts, filter) =>
-  contacts.filter(el => el.name.toLowerCase().includes(filter));
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { refreshUser } from 'redux/auth/auth-operations';
+import PrivateRoute from './PrivateRoutes';
+import PublicRoute from './PublicRoutes';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { useDispatch } from 'react-redux';
+
+const Home = lazy(() => import('pages/Home'));
+const Contacts = lazy(() => import('pages/Contacts'));
+const Register = lazy(() => import('pages/Register'));
+const Login = lazy(() => import('pages/Login'));
 
 export default function App() {
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
-
-  const contacts = useSelector(selectContacts);
-  const filter = useSelector(selectFilter);
-
-  const filteredContacts = filterContacts(contacts, filter);
+  const [isRefreshed, setIsRefreshed] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
+    if (!isRefreshed) {
+      dispatch(refreshUser());
+      setIsRefreshed(true);
+    }
+  }, [dispatch, isRefreshed]);
 
   return (
-    <React.Fragment>
-      <Typography
-        variant="h3"
-        variantMapping={{ h3: 'h1' }}
-        gutterBottom
-        align="center"
-      >
-        Phonebook
-      </Typography>
-
-      <ContactsForm />
-
-      {isLoading && !error && (
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <CircularProgress />
-        </Box>
-      )}
-
-      {!isLoading && error && <div>Error</div>}
-
-      {!isLoading && (contacts.length > 1 || filter !== '' ? <Filter /> : null)}
-
-      {!isLoading && contacts.length > 0 && (
-        <MemoizedContactList contacts={filteredContacts} />
-      )}
-    </React.Fragment>
+    <>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route
+            path="contacts"
+            element={
+              <PrivateRoute redirectTo="/login">
+                <Contacts />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="register"
+            element={
+              <PublicRoute component={Register} redirectTo="/contacts" />
+            }
+          />
+          <Route
+            path="login"
+            element={<PublicRoute component={Login} redirectTo="/contacts" />}
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+      <ToastContainer theme="dark" position="bottom-right" />
+    </>
   );
 }

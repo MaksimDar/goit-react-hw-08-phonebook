@@ -1,14 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { register, logIn, logOut, refreshUser } from './auth-operations';
 import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 const initialState = {
   user: { name: null, email: null },
   token: null,
   isLoggedIn: false,
   isRefreshing: false,
-  isInitialized: false,
+  isInitialized: false, // add a new flag to track initialization status
 };
 
 const authSlice = createSlice({
@@ -36,6 +36,7 @@ const authSlice = createSlice({
         state.isLoggedIn = false;
       })
       .addCase(refreshUser.pending, (state, action) => {
+        // check if the user has already been initialized
         if (!state.isInitialized) {
           state.isInitialized = true;
           return state;
@@ -60,4 +61,5 @@ const persistConfig = {
 };
 
 const authReducer = authSlice.reducer;
+
 export const persistedAuthReducer = persistReducer(persistConfig, authReducer);

@@ -23,6 +23,7 @@ const axiosBaseQuery =
 export const contactsApi = createApi({
   reducerPath: 'contactsApi',
   baseQuery: axiosBaseQuery(),
+
   tagTypes: ['Contacts'],
   endpoints(build) {
     return {
@@ -30,6 +31,7 @@ export const contactsApi = createApi({
         query: () => ({ url: '/contacts', method: 'get' }),
         providesTags: ['Contacts'],
       }),
+
       addContact: build.mutation({
         query: body => {
           return { url: '/contacts', method: 'post', data: body };
@@ -44,6 +46,7 @@ export const contactsApi = createApi({
           });
         },
       }),
+
       updateContact: build.mutation({
         query: ({ id, ...fields }) => {
           return { url: `/contacts/${id}`, method: 'patch', data: fields };
@@ -68,7 +71,7 @@ export const contactsApi = createApi({
           const promise = queryFulfilled;
           toast.promise(promise, {
             pending: 'Deleting contact...',
-            success: 'Contact is deleted!',
+            success: 'Contact deleted!',
             error: 'Failed to delete contact',
           });
         },
